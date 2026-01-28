@@ -6,6 +6,9 @@ A premium, open-source desktop application for generating beautiful city map pos
 ![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)
 ![Stack](https://img.shields.io/badge/stack-React%20%7C%20Electron%20%7C%20Python-blueviolet)
 
+> [!WARNING]
+> **Status & Performance Note**: This application is currently in an experimental state. The Electron + Python architecture is resource-intensive and may exhibit lag or bugs. Please use with caution while we work on optimization.
+
 ## ✨ Features
 
 - **Global Coverage**: Generate high-resolution map posters for *any* city in the world using OpenStreetMap data.
@@ -122,6 +125,7 @@ The final installer will be located at:
 `electron-app\dist\MapToPoster Setup 1.0.0.exe`
 
 ## 🔮 Future Roadmap
+- [ ] **Architecture Migration**: Replace Electron/Python with **Wails (Go)** for a lightweight, single-process app (<100MB RAM).
 - [ ] Mac (DMG) and Linux (AppImage) support.
 - [ ] 3D Building extrusion support.
 - [ ] Custom color picker for theme creation.
