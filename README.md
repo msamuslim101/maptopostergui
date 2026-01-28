@@ -1,4 +1,4 @@
-# MapToPoster 🗺️
+# MapToPosterGUI 🗺️
 
 A premium, open-source desktop application for generating beautiful city map posters. Built with React (Frontend), FastAPI (Backend), and Electron (Desktop wrapper).
 
