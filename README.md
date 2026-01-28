@@ -126,10 +126,6 @@ The final installer will be located at:
 
 ## 🔮 Future Roadmap
 - [ ] **Architecture Migration**: Replace Electron/Python with **Wails (Go)** for a lightweight, single-process app (<100MB RAM).
-- [ ] Mac (DMG) and Linux (AppImage) support.
-- [ ] 3D Building extrusion support.
-- [ ] Custom color picker for theme creation.
-
 
 ## 🙏 Acknowledgements
 Special thanks to [Ankur (originalankur)](https://github.com/originalankur/maptoposter) for the original `maptoposter` backend implementation which powers the map generation logic in this project.
