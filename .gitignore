@@ -1,0 +1,32 @@
+# System & Environment
+.DS_Store
+Thumbs.db
+.env
+.agent/
+.vscode/
+.idea/
+
+# Dependencies
+node_modules/
+backend/.venv/
+backend/__pycache__/
+*.spec
+
+# Build Artifacts
+react-windows/dist/
+electron-app/dist/
+backend-dist/
+build/
+*.exe
+
+# Large Files & Binaries (>100MB)
+*.zip
+*.tar.gz
+*.rar
+maptoposter-main/maptoposter-main.zip
+
+# Logs & Reports
+npm-debug.log
+yarn-error.log
+pip-log.txt
+Project_Analysis_and_Health_Report.md

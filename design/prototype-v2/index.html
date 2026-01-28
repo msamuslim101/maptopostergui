@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapToPoster V2</title>
+
+    <!-- Fonts: Inter & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        base: 'var(--bg-base)',
+                        surface: 'var(--bg-surface)',
+                        subtle: 'var(--bg-subtle)',
+                        border: 'var(--border-subtle)',
+
+                        brand: {
+                            DEFAULT: 'var(--accent-primary)',
+                            hover: 'var(--accent-hover)',
+                        },
+
+                        txt: {
+                            primary: 'var(--text-primary)',
+                            secondary: 'var(--text-secondary)',
+                            muted: 'var(--text-muted)',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body
+    class="bg-base text-txt-primary h-screen w-screen overflow-hidden flex selection:bg-brand selection:text-base selection:bg-opacity-30">
+
+    <!-- LEFT SIDEBAR -->
+    <aside
+        class="w-80 flex flex-col border-r border-border bg-surface/50 backdrop-blur-sm z-20 shadow-xl flex-shrink-0">
+        <!-- Header -->
+        <div class="px-6 py-6 pb-4">
+            <h1 class="text-txt-primary tracking-tight text-xl font-bold flex items-center gap-2">
+                <span class="material-symbols-outlined text-brand text-3xl">map</span>
+                MapToPoster
+            </h1>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto px-6 py-4 space-y-8 custom-scrollbar">
+
+            <!-- Location Search -->
+            <div class="space-y-3">
+                <label class="text-xs font-semibold text-txt-muted uppercase tracking-wider ml-1">Location</label>
+                <div class="relative group">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-txt-muted group-focus-within:text-brand transition-colors text-xl">search</span>
+
+                    <input type="text" id="city-input" placeholder="Enter city..."
+                        class="block w-full pl-10 pr-10 py-3 text-sm bg-base border border-border rounded-xl text-white placeholder-txt-muted focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none transition-all shadow-sm">
+
+                    <button
+                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-txt-muted hover:text-white transition-colors cursor-pointer"
+                        onclick="document.getElementById('city-input').value = ''">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Themes Grid -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between px-1">
+                    <label class="text-xs font-semibold text-txt-muted uppercase tracking-wider">Themes</label>
+                    <span class="text-[10px] bg-brand/10 text-brand px-2 py-0.5 rounded-full font-medium"
+                        id="theme-count">0 Available</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3" id="theme-grid">
+                    <!-- Themes injected via JS -->
+                </div>
+            </div>
+
+            <!-- Extra Options -->
+            <div class="space-y-2 pt-4 border-t border-border">
+                <button
+                    class="flex items-center justify-between w-full p-2 text-sm text-txt-secondary hover:text-white hover:bg-white/5 rounded-lg transition-colors group">
+                    <span class="flex items-center gap-2">
+                        <span
+                            class="material-symbols-outlined text-lg text-txt-muted group-hover:text-brand transition-colors">palette</span>
+                        Custom Colors
+                    </span>
+                    <span class="material-symbols-outlined text-base">chevron_right</span>
+                </button>
+                <button
+                    class="flex items-center justify-between w-full p-2 text-sm text-txt-secondary hover:text-white hover:bg-white/5 rounded-lg transition-colors group">
+                    <span class="flex items-center gap-2">
+                        <span
+                            class="material-symbols-outlined text-lg text-txt-muted group-hover:text-brand transition-colors">layers</span>
+                        Map Layers
+                    </span>
+                    <span class="material-symbols-outlined text-base">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-4 border-t border-border text-center">
+            <p class="text-[10px] text-txt-muted">v2.4.0 • Prototype V2</p>
+        </div>
+    </aside>
+
+
+    <!-- CENTER CANVAS -->
+    <main class="flex-1 relative bg-[#0a0a0a] flex flex-col z-10 overflow-hidden shadow-inner">
+
+        <!-- Top Toolbar -->
+        <div class="absolute top-6 left-1/2 -translate-x-1/2 z-30 transition-all duration-500" id="top-toolbar">
+            <div
+                class="bg-surface/80 backdrop-blur-md border border-white/5 rounded-full px-4 py-1.5 shadow-xl flex items-center gap-4 text-xs font-medium text-txt-secondary">
+                <span class="flex items-center gap-1.5 status-indicator">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    Live Preview
+                </span>
+                <span class="w-px h-3 bg-white/20"></span>
+                <span>300 DPI</span>
+            </div>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="relative w-full h-full flex items-center justify-center p-12 bg-grid-pattern transition-colors duration-500"
+            id="canvas-bg">
+
+            <!-- EMPTY STATE -->
+            <div id="empty-state" class="text-center flex flex-col items-center animate-fade-in z-20">
+                <div
+                    class="w-20 h-20 rounded-2xl bg-surface border border-border flex items-center justify-center mb-6 shadow-2xl rotate-3 group">
+                    <span
+                        class="material-symbols-outlined text-4xl text-brand group-hover:scale-110 transition-transform">map_search</span>
+                </div>
+                <h2 class="text-xl font-bold text-txt-primary mb-2">Design Your Map</h2>
+                <p class="text-txt-secondary text-sm max-w-xs">Select a location and theme to begin generating your
+                    artistic poster.</p>
+            </div>
+
+            <!-- LOADER -->
+            <div id="map-loader" class="hidden flex flex-col items-center z-50">
+                <div class="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p class="text-xs font-medium text-brand animate-pulse">Rendering Map Data...</p>
+            </div>
+
+            <!-- POSTER PREVIEW -->
+            <div id="poster-preview"
+                class="hidden relative bg-black shadow-2xl overflow-hidden aspect-[3/4] h-full max-h-[85vh] ring-1 ring-white/10 rounded-sm cursor-grab active:cursor-grabbing group animate-fade-in">
+
+                <!-- Map Layer -->
+                <div id="preview-map-layer"
+                    class="absolute inset-0 w-full h-full bg-cover bg-center transition-all duration-700"
+                    style="background-color: #1a1a1a;">
+                    <!-- CSS Grid Overlay for aesthetics -->
+                    <div class="absolute inset-0 opacity-20 pointer-events-none"
+                        style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 50px 50px;">
+                    </div>
+                </div>
+
+                <!-- Text Layer -->
+                <div
+                    class="absolute bottom-16 left-0 w-full text-center z-10 pointer-events-none mix-blend-difference text-white">
+                    <h2 class="text-4xl font-bold uppercase tracking-[0.2em] font-sans mb-2" id="preview-city">CITY</h2>
+                    <p class="text-xs font-light tracking-[0.1em] uppercase opacity-80" id="preview-coords">COORDINATES
+                    </p>
+                    <div class="w-12 h-px bg-white/50 mx-auto mt-6"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Zoom Controls -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 transition-transform duration-300 translate-y-20 opacity-0"
+            id="zoom-controls">
+            <div
+                class="bg-base/80 backdrop-blur-md border border-border rounded-full p-1.5 shadow-2xl flex items-center gap-1">
+                <button class="p-2 text-txt-primary hover:bg-white/10 rounded-full transition-colors"><span
+                        class="material-symbols-outlined text-xl">remove</span></button>
+                <div class="px-2 min-w-[3rem] text-center text-xs font-medium text-txt-secondary select-none">100%</div>
+                <button class="p-2 text-txt-primary hover:bg-white/10 rounded-full transition-colors"><span
+                        class="material-symbols-outlined text-xl">add</span></button>
+                <div class="w-px h-4 bg-white/10 mx-1"></div>
+                <button class="p-2 text-txt-primary hover:bg-white/10 rounded-full transition-colors"><span
+                        class="material-symbols-outlined text-xl">fit_screen</span></button>
+            </div>
+        </div>
+
+    </main>
+
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="w-80 flex flex-col border-l border-border bg-surface z-20 shadow-xl flex-shrink-0">
+        <div class="px-6 py-6 border-b border-border">
+            <h2 class="text-txt-primary text-lg font-semibold tracking-tight">Print Settings</h2>
+            <p class="text-txt-muted text-xs mt-1">Configure your output format</p>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+
+            <!-- Format -->
+            <div class="space-y-4">
+                <label class="text-sm font-medium text-txt-secondary">Size & Orientation</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="relative">
+                        <select
+                            class="appearance-none block w-full bg-base border border-border text-white text-sm rounded-lg focus:ring-1 focus:ring-brand focus:border-brand p-2.5 pr-8 focus:outline-none">
+                            <option>18 x 24 in</option>
+                            <option>24 x 36 in</option>
+                            <option>A3 (ISO)</option>
+                        </select>
+                        <span
+                            class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-txt-muted pointer-events-none">arrow_drop_down</span>
+                    </div>
+
+                    <div class="flex bg-base rounded-lg border border-border p-1">
+                        <button
+                            class="flex-1 flex items-center justify-center rounded bg-surface shadow-sm text-brand transition-all">
+                            <span class="material-symbols-outlined text-xl">crop_portrait</span>
+                        </button>
+                        <button
+                            class="flex-1 flex items-center justify-center rounded text-txt-muted hover:text-white transition-all">
+                            <span class="material-symbols-outlined text-xl">crop_landscape</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toggles using a Loop probably in React, but manual here -->
+            <div class="space-y-4">
+                <label class="text-sm font-medium text-txt-secondary block border-b border-border pb-2 mb-4">Overlay
+                    Elements</label>
+
+                <!-- Toggle Item -->
+                <div class="flex items-center justify-between group cursor-pointer">
+                    <span class="text-sm text-txt-muted group-hover:text-txt-primary transition-colors">Show City
+                        Name</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" checked class="sr-only peer">
+                        <div
+                            class="w-9 h-5 bg-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand">
+                        </div>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-between group cursor-pointer">
+                    <span class="text-sm text-txt-muted group-hover:text-txt-primary transition-colors">Show
+                        Coordinates</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" checked class="sr-only peer">
+                        <div
+                            class="w-9 h-5 bg-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand">
+                        </div>
+                    </label>
+                </div>
+
+            </div>
+
+            <!-- Filename -->
+            <div class="space-y-2 pt-2">
+                <label class="text-sm font-medium text-txt-secondary">Filename</label>
+                <div class="flex">
+                    <input type="text"
+                        class="rounded-l-lg bg-base border border-border text-txt-primary focus:ring-1 focus:ring-brand focus:border-brand block flex-1 min-w-0 w-full text-sm border-r-0 p-2.5 focus:outline-none"
+                        value="Patna_Poster_Noir">
+                    <span
+                        class="inline-flex items-center px-3 text-sm text-txt-muted bg-subtle border border-l-0 border-border rounded-r-lg">.png</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="p-6 border-t border-border bg-surface space-y-4">
+            <button id="btn-export" disabled
+                class="w-full text-white bg-brand hover:bg-brand-hover disabled:opacity-50 disabled:cursor-not-allowed font-bold rounded-lg text-sm px-5 py-3.5 focus:outline-none transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand/20 active:scale-[0.98]">
+                <span class="material-symbols-outlined text-xl">download</span>
+                Export Poster
+            </button>
+        </div>
+    </aside>
+
+    <!-- Modal Overlay -->
+    <div id="modal-overlay"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center">
+        <div class="bg-surface border border-border rounded-2xl shadow-2xl w-[400px] p-8 scale-95 transition-transform duration-300 transform relative"
+            id="modal-content">
+
+            <button id="btn-modal-close-icon" class="absolute top-4 right-4 text-txt-muted hover:text-white"><span
+                    class="material-symbols-outlined">close</span></button>
+
+            <div class="flex flex-col items-center text-center">
+                <div class="w-16 h-16 rounded-full bg-brand/20 flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined text-brand text-4xl">check_circle</span>
+                </div>
+                <h3 class="text-xl font-bold text-txt-primary mb-2">Export Complete!</h3>
+                <p class="text-sm text-txt-secondary mb-6">Your map poster has been saved successfully.</p>
+
+                <div
+                    class="w-full bg-base border border-border rounded-lg px-4 py-3 mb-6 flex items-center justify-between">
+                    <code class="text-xs text-brand truncate font-mono">D:/Maps/Patna_Noir.png</code>
+                    <button class="text-txt-muted hover:text-white transition-colors"><span
+                            class="material-symbols-outlined text-sm">content_copy</span></button>
+                </div>
+
+                <div class="flex gap-3 w-full">
+                    <button id="btn-modal-folder"
+                        class="flex-1 py-2.5 rounded-lg border border-border text-sm font-medium hover:bg-white/5 transition-colors text-txt-secondary">Open
+                        Folder</button>
+                    <button id="btn-modal-reset"
+                        class="flex-1 py-2.5 rounded-lg bg-brand hover:bg-brand-hover text-white text-sm font-medium transition-colors shadow-lg shadow-brand/20">Create
+                        New</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script src="js/app.js"></script>
+</body>
+
+</html>

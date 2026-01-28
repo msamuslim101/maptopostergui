@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MapToPoster: Map Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00b28f",
+                        "background-light": "#f7f7f7",
+                        "background-dark": "#1a1a1a",
+                        "surface-dark": "#242424",
+                        "surface-border": "#333333"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444;
+        }
+        
+        /* Hide number input spinners */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-gray-200 font-display h-screen w-screen overflow-hidden flex selection:bg-primary/30 selection:text-primary">
+<!-- Left Sidebar: Creation & Navigation -->
+<aside class="w-80 flex flex-col border-r border-surface-border bg-surface-dark/50 backdrop-blur-sm z-20 shadow-xl flex-shrink-0 h-full">
+<!-- Header -->
+<div class="px-6 py-6 pb-2">
+<h1 class="text-white tracking-tight text-xl font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-size: 28px;">map</span>
+                MapToPoster
+            </h1>
+</div>
+<div class="flex-1 overflow-y-auto px-4 py-4 space-y-8">
+<!-- Search Section -->
+<div class="space-y-3">
+<label class="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">Location</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 20px;">search</span>
+</div>
+<input class="block w-full p-3 pl-10 text-sm bg-[#151515] border border-surface-border rounded-xl text-white placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm" placeholder="Enter city or coordinates..." type="text" value="Patna, India"/>
+<button class="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">close</span>
+</button>
+</div>
+</div>
+<!-- Themes Section -->
+<div class="space-y-3">
+<div class="flex items-center justify-between px-1">
+<label class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Themes</label>
+<span class="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium">4 Available</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<!-- Theme Item: Noir (Selected) -->
+<button class="group relative flex flex-col gap-2 p-1 rounded-xl transition-all ring-2 ring-primary bg-primary/5">
+<div class="absolute top-2 right-2 bg-primary text-black rounded-full p-0.5 z-10 shadow-lg">
+<span class="material-symbols-outlined block" style="font-size: 14px; font-weight: bold;">check</span>
+</div>
+<div class="w-full aspect-square bg-[#000] rounded-lg overflow-hidden relative shadow-inner border border-white/10" data-alt="Abstract dark map style with high contrast white lines representing streets on a black background" style="background-image: radial-gradient(circle at center, #333 1px, transparent 1px), radial-gradient(circle at center, #111 1px, transparent 1px); background-size: 20px 20px, 10px 10px; background-position: 0 0, 5px 5px;">
+<!-- Mock lines for map preview -->
+<div class="absolute inset-0 opacity-80" style="background-image: linear-gradient(45deg, transparent 48%, #fff 48%, #fff 52%, transparent 52%); background-size: 30px 30px;"></div>
+<div class="absolute inset-0 opacity-60" style="background-image: linear-gradient(-45deg, transparent 45%, #fff 45%, #fff 55%, transparent 55%); background-size: 40px 40px;"></div>
+</div>
+<span class="text-sm font-medium text-white px-1 text-left">Noir</span>
+</button>
+<!-- Theme Item: Blueprint -->
+<button class="group relative flex flex-col gap-2 p-1 rounded-xl transition-all hover:bg-white/5 border border-transparent hover:border-white/10">
+<div class="w-full aspect-square bg-[#1e3a8a] rounded-lg overflow-hidden relative shadow-inner" data-alt="Blueprint map style with blue background and white grid lines" style="background-image: linear-gradient(#3b82f6 1px, transparent 1px), linear-gradient(90deg, #3b82f6 1px, transparent 1px); background-size: 20px 20px;">
+</div>
+<span class="text-sm font-medium text-gray-400 group-hover:text-gray-200 px-1 text-left">Blueprint</span>
+</button>
+<!-- Theme Item: Sunset -->
+<button class="group relative flex flex-col gap-2 p-1 rounded-xl transition-all hover:bg-white/5 border border-transparent hover:border-white/10">
+<div class="w-full aspect-square bg-gradient-to-br from-orange-400 to-purple-600 rounded-lg overflow-hidden relative shadow-inner" data-alt="Sunset map style with gradient orange to purple background">
+</div>
+<span class="text-sm font-medium text-gray-400 group-hover:text-gray-200 px-1 text-left">Sunset</span>
+</button>
+<!-- Theme Item: Magma -->
+<button class="group relative flex flex-col gap-2 p-1 rounded-xl transition-all hover:bg-white/5 border border-transparent hover:border-white/10">
+<div class="w-full aspect-square bg-[#1a1a1a] rounded-lg overflow-hidden relative shadow-inner" data-alt="Magma map style with dark background and red glowing street lines" style="box-shadow: inset 0 0 20px #000;">
+<div class="absolute inset-0 opacity-80" style="background-image: linear-gradient(45deg, transparent 48%, #ef4444 48%, #ef4444 52%, transparent 52%); background-size: 30px 30px;"></div>
+</div>
+<span class="text-sm font-medium text-gray-400 group-hover:text-gray-200 px-1 text-left">Magma</span>
+</button>
+</div>
+</div>
+<!-- Additional Options -->
+<div class="space-y-3 pt-4 border-t border-surface-border">
+<button class="flex items-center justify-between w-full p-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-size: 18px;">palette</span>
+                        Custom Colors
+                    </span>
+<span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
+</button>
+<button class="flex items-center justify-between w-full p-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-size: 18px;">layers</span>
+                        Map Layers
+                    </span>
+<span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Footer Info -->
+<div class="p-4 border-t border-surface-border text-center">
+<p class="text-[10px] text-gray-600">v2.4.0 • Built with OSM Data</p>
+</div>
+</aside>
+<!-- Center Canvas: Preview -->
+<main class="flex-1 relative bg-[#0a0a0a] flex flex-col z-10 overflow-hidden shadow-inner">
+<!-- Toolbar Overlay Top -->
+<div class="absolute top-6 left-1/2 -translate-x-1/2 z-30">
+<div class="bg-surface-dark/80 backdrop-blur-md border border-white/5 rounded-full px-4 py-1.5 shadow-xl flex items-center gap-4 text-xs font-medium text-gray-300">
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Live Preview</span>
+<span class="w-px h-3 bg-white/20"></span>
+<span>Generating at 300 DPI</span>
+</div>
+</div>
+<!-- The Map Content -->
+<div class="relative w-full h-full flex items-center justify-center p-12 bg-[#050505]" style="background-image: radial-gradient(#1a1a1a 1px, transparent 1px); background-size: 20px 20px;">
+<!-- Poster Frame Area -->
+<div class="relative bg-black shadow-2xl overflow-hidden aspect-[3/4] h-full max-h-[85vh] ring-1 ring-white/10 rounded-sm">
+<!-- Map Image Placeholder -->
+<div class="absolute inset-0 w-full h-full bg-cover bg-center" data-alt="Artistic map poster of Patna India, Noir style, black background with intricate white street network lines" data-location="Patna, India" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuALKaM4biZD_Jzh38qTTYqlE6i0kWjw-pC9OZjg9B6h09pswqSJ3zH94X0Ql0m0QxAub1YQ7CtplHi3nH5vKVq--eV3legJutbDx7iC5DdDPKiieZdXxoz6v7AzQJ2u5k3elNc1Ccn_30UqX97xfHLb2crw93MkfuKy39ff7GYqpghQ8KjRArgIiqhyjIIR4JCNZx90WkbSOoD6bau5BWZ4-1em3S_BW0bh8_Q0-kuZIPRSlLZ98rauR6L2-yWMn4vVLPiNjRgma8pN');">
+<!-- Overlay for stylized map effect (simulated with css) -->
+<div class="absolute inset-0 mix-blend-screen opacity-30 pointer-events-none" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDG0mKBXvRMXkgxljUOu1BGi359EmZ7nH0fe1EIdo6_ORaueJrvHtErMJDtwufNVv26VUSvmF04jjUXuaPrhnOKHT4fqDsgWg3MCxK-Oo5vurkYuN1bvsEmX3OYj4kXsYr-H5YNgnbITg_4bao3-qybcrGfz6iCFTVLW2da_Pg77jOSGDf8OKe9620Pd7-WTYBxJS367gFMQIHgmVaV_gsP_3wya0vu25l6-YSy1MVJP6MRnipjPNzXfX0zswDv3HwtsJc64mSc0ueZ');">
+</div>
+<!-- City Label on Poster -->
+<div class="absolute bottom-16 left-0 w-full text-center z-10 pointer-events-none">
+<h2 class="text-white text-4xl font-bold uppercase tracking-[0.2em] font-display mb-2">Patna</h2>
+<p class="text-white/70 text-xs font-light tracking-[0.1em] uppercase">25.5941° N, 85.1376° E</p>
+<div class="w-12 h-px bg-white/50 mx-auto mt-6"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Zoom Controls -->
+<div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30">
+<div class="bg-[#1a1a1a]/80 backdrop-blur-md border border-white/10 rounded-full p-1.5 shadow-2xl flex items-center gap-1">
+<button class="p-2 text-white hover:bg-white/10 rounded-full transition-colors tooltip" title="Zoom Out">
+<span class="material-symbols-outlined block" style="font-size: 20px;">remove</span>
+</button>
+<div class="px-2 min-w-[3rem] text-center text-xs font-medium text-gray-300 select-none">100%</div>
+<button class="p-2 text-white hover:bg-white/10 rounded-full transition-colors tooltip" title="Zoom In">
+<span class="material-symbols-outlined block" style="font-size: 20px;">add</span>
+</button>
+<div class="w-px h-4 bg-white/20 mx-1"></div>
+<button class="p-2 text-white hover:bg-white/10 rounded-full transition-colors tooltip" title="Reset View">
+<span class="material-symbols-outlined block" style="font-size: 20px;">fit_screen</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Right Sidebar: Configuration -->
+<aside class="w-80 flex flex-col border-l border-surface-border bg-surface-dark z-20 shadow-xl flex-shrink-0 h-full">
+<div class="px-6 py-6 border-b border-surface-border">
+<h2 class="text-white text-lg font-semibold tracking-tight">Print Settings</h2>
+<p class="text-gray-500 text-xs mt-1">Configure your output format</p>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-8">
+<!-- Dimensions -->
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<label class="text-sm font-medium text-gray-300">Size &amp; Orientation</label>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="relative">
+<select class="appearance-none block w-full bg-[#151515] border border-surface-border text-white text-sm rounded-lg focus:ring-primary focus:border-primary block p-2.5 pr-8">
+<option>12 x 18 in</option>
+<option selected="">18 x 24 in</option>
+<option>24 x 36 in</option>
+<option>A3 (ISO)</option>
+<option>A2 (ISO)</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+<span class="material-symbols-outlined" style="font-size: 20px;">arrow_drop_down</span>
+</div>
+</div>
+<div class="flex bg-[#151515] rounded-lg border border-surface-border p-1">
+<button class="flex-1 flex items-center justify-center rounded bg-surface-dark shadow-sm text-primary transition-all">
+<span class="material-symbols-outlined" style="font-size: 20px;">crop_portrait</span>
+</button>
+<button class="flex-1 flex items-center justify-center rounded text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined" style="font-size: 20px;">crop_landscape</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Labels Toggle -->
+<div class="space-y-4">
+<label class="text-sm font-medium text-gray-300 block border-b border-surface-border pb-2 mb-4">Overlay Elements</label>
+<div class="flex items-center justify-between">
+<span class="text-sm text-gray-400">Show City Name</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm text-gray-400">Show Coordinates</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm text-gray-400">Show Borders</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<!-- Quality -->
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<label class="text-sm font-medium text-gray-300">Resolution</label>
+<span class="text-xs text-primary bg-primary/10 px-2 py-1 rounded">Print Ready</span>
+</div>
+<div class="relative">
+<select class="appearance-none block w-full bg-[#151515] border border-surface-border text-white text-sm rounded-lg focus:ring-primary focus:border-primary block p-3 pr-8">
+<option>72 DPI (Web)</option>
+<option>150 DPI (Draft)</option>
+<option selected="">300 DPI (High Quality)</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+<span class="material-symbols-outlined" style="font-size: 20px;">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Filename -->
+<div class="space-y-2 pt-2">
+<label class="text-sm font-medium text-gray-300">Filename</label>
+<div class="flex">
+<input class="rounded-none rounded-l-lg bg-[#151515] border border-surface-border text-gray-300 focus:ring-primary focus:border-primary block flex-1 min-w-0 w-full text-sm border-r-0 p-2.5" type="text" value="Patna_Poster_Noir"/>
+<span class="inline-flex items-center px-3 text-sm text-gray-500 bg-[#222] border border-l-0 border-surface-border rounded-r-lg">
+                        .png
+                    </span>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="p-6 border-t border-surface-border bg-surface-dark space-y-4">
+<div class="flex justify-between text-xs text-gray-500 font-mono">
+<span>Total Size</span>
+<span>~12.4 MB</span>
+</div>
+<button class="w-full text-white bg-primary hover:bg-primary/90 focus:ring-4 focus:ring-primary/30 font-bold rounded-lg text-sm px-5 py-3.5 focus:outline-none transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined" style="font-size: 20px;">download</span>
+                Export Poster
+            </button>
+</div>
+</aside>
+</body></html>

@@ -1,0 +1,66 @@
+:root {
+    /* 
+     * V2 DESIGN SYSTEM (Refined & Converted to OKLCH)
+     * Primary Teal: #00b28f -> oklch(66.5% 0.16 166.4)
+     * Bg Dark: #1a1a1a -> oklch(17.8% 0 0)
+     * Surface: #242424 -> oklch(21.5% 0 0)
+     * Border: #333333 -> oklch(27% 0 0)
+     */
+
+    --bg-base: oklch(17.8% 0 0);
+    --bg-surface: oklch(21.5% 0 0);
+    --bg-subtle: oklch(25% 0 0);
+
+    --border-subtle: oklch(27% 0 0);
+
+    /* Brand: Teal */
+    --accent-primary: oklch(66.5% 0.16 166.4);
+    --accent-hover: oklch(70% 0.16 166.4);
+
+    /* Text */
+    --text-primary: oklch(98% 0 0);
+    --text-secondary: oklch(70% 0 0);
+    --text-muted: oklch(50% 0 0);
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--border-subtle);
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--bg-subtle);
+}
+
+/* Map Pattern Backgrounds */
+.bg-grid-pattern {
+    background-image:
+        radial-gradient(var(--bg-subtle) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
