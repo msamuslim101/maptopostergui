@@ -145,7 +145,8 @@ async def generate_map_task(job_id: str, request: GenerateRequest):
         jobs[job_id]["progress"] = 100
         jobs[job_id]["status"] = "completed"
         jobs[job_id]["message"] = "Poster generated successfully!"
-        jobs[job_id]["result_path"] = output_file
+        # Store ONLY the filename (not full path) - frontend appends /api/posters/
+        jobs[job_id]["result_path"] = os.path.basename(output_file)
         
     except Exception as e:
         jobs[job_id]["status"] = "failed"

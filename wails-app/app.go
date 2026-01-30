@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -69,9 +70,11 @@ func (a *App) startPythonBackend() {
 	// Create command with context - CRITICAL: ties process to parent lifecycle
 	cmd := exec.CommandContext(a.ctx, pythonPath)
 
-	// Capture output for debugging
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	// HIDE THE CONSOLE WINDOW (Windows-specific)
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		HideWindow:    true,
+		CreationFlags: 0x08000000, // CREATE_NO_WINDOW
+	}
 
 	// Start the process
 	if err := cmd.Start(); err != nil {
