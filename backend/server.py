@@ -288,6 +288,7 @@ async def list_posters():
 if __name__ == "__main__":
     import uvicorn
     # Run server
-    # Disable reload in production (frozen) to prevent PyInstaller issues
+    # Pass app object directly for PyInstaller compatibility (no module import)
     is_frozen = getattr(sys, 'frozen', False)
-    uvicorn.run("server:app", host="127.0.0.1", port=8000, reload=not is_frozen)
+    uvicorn.run(app, host="127.0.0.1", port=8000, reload=False if is_frozen else False)
+

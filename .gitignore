@@ -16,7 +16,7 @@ backend/__pycache__/
 react-windows/dist/
 electron-app/dist/
 backend-dist/
-build/
+backend/build/
 *.exe
 
 # Large Files & Binaries (>100MB)
