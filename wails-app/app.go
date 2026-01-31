@@ -120,24 +120,28 @@ func (a *App) waitForBackend() {
 // stopPythonBackend kills the Python process
 func (a *App) stopPythonBackend() {
 	if a.pythonCmd != nil && a.pythonCmd.Process != nil {
-		runtime.LogInfo(a.ctx, "Stopping Python backend...")
-		// Try graceful shutdown first
-		a.pythonCmd.Process.Signal(os.Interrupt)
+		pid := a.pythonCmd.Process.Pid
+		runtime.LogInfo(a.ctx, fmt.Sprintf("Stopping Python backend (PID: %d)...", pid))
 
-		// Give it 2 seconds to shutdown gracefully
-		done := make(chan error, 1)
-		go func() {
-			done <- a.pythonCmd.Wait()
-		}()
-
-		select {
-		case <-done:
-			runtime.LogInfo(a.ctx, "Python backend stopped gracefully")
-		case <-time.After(2 * time.Second):
-			// Force kill if it didn't stop
-			runtime.LogInfo(a.ctx, "Force killing Python backend...")
-			a.pythonCmd.Process.Kill()
+		// On Windows, use taskkill to forcefully terminate the process tree
+		// This is more reliable than os.Interrupt for hidden console processes
+		killCmd := exec.Command("taskkill", "/F", "/T", "/PID", fmt.Sprintf("%d", pid))
+		killCmd.SysProcAttr = &syscall.SysProcAttr{
+			HideWindow:    true,
+			CreationFlags: 0x08000000, // CREATE_NO_WINDOW
 		}
+
+		if err := killCmd.Run(); err != nil {
+			runtime.LogWarning(a.ctx, "taskkill failed, trying Process.Kill(): "+err.Error())
+			// Fallback to direct kill
+			a.pythonCmd.Process.Kill()
+		} else {
+			runtime.LogInfo(a.ctx, "Python backend terminated via taskkill")
+		}
+
+		// Wait for process to fully exit
+		a.pythonCmd.Wait()
+		runtime.LogInfo(a.ctx, "Python backend stopped")
 	}
 }
 

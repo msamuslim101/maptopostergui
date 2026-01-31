@@ -89,7 +89,7 @@ def load_theme(theme_name="feature_based"):
     
     with open(theme_file, 'r') as f:
         theme = json.load(f)
-        print(f"✓ Loaded theme: {theme.get('name', theme_name)}")
+        print(f"[OK] Loaded theme: {theme.get('name', theme_name)}")
         if 'description' in theme:
             print(f"  {theme['description']}")
         return theme
@@ -207,8 +207,8 @@ def get_coordinates(city, country):
     location = geolocator.geocode(f"{city}, {country}")
     
     if location:
-        print(f"✓ Found: {location.address}")
-        print(f"✓ Coordinates: {location.latitude}, {location.longitude}")
+        print(f"[OK] Found: {location.address}")
+        print(f"[OK] Coordinates: {location.latitude}, {location.longitude}")
         return (location.latitude, location.longitude)
     else:
         raise ValueError(f"Could not find coordinates for {city}, {country}")
@@ -274,7 +274,7 @@ def create_poster(city, country, point, dist, output_file,
             parks = None
         pbar.update(1)
     
-    print("✓ All data downloaded successfully!")
+    print("[OK] All data downloaded successfully!")
     
     # 2. Setup Plot with dynamic size
     print("Rendering map...")
@@ -357,7 +357,7 @@ def create_poster(city, country, point, dist, output_file,
     print(f"Saving to {output_file}...")
     plt.savefig(output_file, dpi=300, facecolor=THEME['bg'])
     plt.close()
-    print(f"✓ Done! Poster saved as {output_file}")
+    print(f"[OK] Done! Poster saved as {output_file}")
 
 def print_examples():
     """Print usage examples."""
@@ -498,7 +498,7 @@ Examples:
         create_poster(args.city, args.country, coords, args.distance, output_file)
         
         print("\n" + "=" * 50)
-        print("✓ Poster generation complete!")
+        print("[OK] Poster generation complete!")
         print("=" * 50)
         
     except Exception as e:
