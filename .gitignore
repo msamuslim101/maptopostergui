@@ -30,3 +30,14 @@ npm-debug.log
 yarn-error.log
 pip-log.txt
 Project_Analysis_and_Health_Report.md
+
+# AI Analysis Files (local only)
+docker-vs-windowsexe.md
+maptoposter-repo-deep-analysis.md
+maptoposter-repo-analysis.md
+pull-request-and-plan.md
+
+# Legacy/Archive Folders (local collection, not pushed)
+electron-app/
+react-windows/
+design/
