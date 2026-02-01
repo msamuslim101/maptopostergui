@@ -11,6 +11,12 @@ A premium, open-source desktop application for generating beautiful city map pos
 
 ---
 
+## 📸 Screenshot
+
+![MapToPoster GUI](assets/screenshot.png)
+
+---
+
 ## ✨ Features (v1.0)
 
 - **Global Coverage**: Generate high-resolution map posters for *any* city in the world
@@ -48,9 +54,26 @@ MapToPoster/
 
 ---
 
+## 🙏 Attribution & Upstream
+
+This project is a **desktop GUI wrapper** for [originalankur/maptoposter](https://github.com/originalankur/maptoposter).
+
+| Aspect | Detail |
+|--------|--------|
+| **Core Engine** | [originalankur/maptoposter](https://github.com/originalankur/maptoposter) |
+| **Snapshot Version** | January 18, 2026 |
+| **What I Added** | Windows desktop GUI, React UI, FastAPI server wrapper, one-click installer |
+| **License** | MIT (same as original) |
+
+> 💡 All map generation logic belongs to the original project. I only added the GUI wrapper and bundling.
+
+---
+
 ## 🚧 Roadmap (Planned Features)
 
 ### UI Components (Coming Soon)
+- [ ] Custom city display name (`--name` parameter support)
+- [ ] Dynamic font sizing for long city names
 - [ ] Custom color picker for themes
 - [ ] Live preview while adjusting settings
 - [ ] Map drag-to-pan for precise positioning
@@ -59,12 +82,18 @@ MapToPoster/
 - [ ] History/Gallery of generated posters
 
 ### Backend Features (Planned)
+- [ ] Aspect ratio options (Instagram Stories 9:16, A4 print, etc.)
 - [ ] Batch generation (multiple cities at once)
-- [ ] Custom text labels (beyond city/country name)
 - [ ] Vector export (SVG/PDF) for print shops
+- [ ] Custom text labels (beyond city/country name)
 - [ ] Water-only mode (for coastal cities)
 - [ ] Road hierarchy customization
 - [ ] Cache management (clear/view cached cities)
+- [ ] New themes from upstream
+
+### Platform Support (v2.0)
+- [ ] macOS support (Wails supports it!)
+- [ ] Linux support
 
 ---
 
@@ -119,7 +148,7 @@ MapToPoster/
 │   ├── server.py           # REST API for map generation
 │   └── server.spec         # PyInstaller config
 ├── maptoposter-main/       # Core engine (osmnx + matplotlib)
-└── design/                 # UI prototypes
+└── assets/                 # Screenshots and media
 ```
 
 **Tech Stack:**
@@ -146,15 +175,6 @@ MapToPoster/
 
 - Schema warning in IDE (`Unable to load schema from wails.io`) - Safe to ignore, doesn't affect builds
 - First-time generation for a new city takes 30-60 seconds (downloading map data)
-
----
-
-## 🙏 Acknowledgements
-
-- **[originalankur/maptoposter](https://github.com/originalankur/maptoposter)** - Original Python map generator
-- **[Wails](https://wails.io/)** - Go + WebView framework
-- **[OSMnx](https://github.com/gboeing/osmnx)** - OpenStreetMap network analysis
-- **[Lucide Icons](https://lucide.dev/)** - Beautiful open-source icons
 
 ---
 
