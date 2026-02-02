@@ -762,26 +762,23 @@ function App() {
 
                             <div className="flex items-center justify-between group cursor-pointer" onClick={() => setShowCityName(!showCityName)}>
                                 <span className="text-sm text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors">Show City Name</span>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" checked={showCityName} onChange={() => { }} className="sr-only peer" />
-                                    <div className={`w-9 h-5 rounded-full peer after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all ${showCityName ? 'bg-[var(--accent-primary)] after:translate-x-full after:border-white' : 'bg-[var(--border-subtle)]'}`}></div>
-                                </label>
+                                <div className="relative inline-flex items-center pointer-events-none">
+                                    <div className={`w-9 h-5 rounded-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all ${showCityName ? 'bg-[var(--accent-primary)] after:translate-x-full after:border-white' : 'bg-[var(--border-subtle)]'}`}></div>
+                                </div>
                             </div>
 
                             <div className="flex items-center justify-between group cursor-pointer" onClick={() => setShowCountryName(!showCountryName)}>
                                 <span className="text-sm text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors">Show Country Name</span>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" checked={showCountryName} onChange={() => { }} className="sr-only peer" />
-                                    <div className={`w-9 h-5 rounded-full peer after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all ${showCountryName ? 'bg-[var(--accent-primary)] after:translate-x-full after:border-white' : 'bg-[var(--border-subtle)]'}`}></div>
-                                </label>
+                                <div className="relative inline-flex items-center pointer-events-none">
+                                    <div className={`w-9 h-5 rounded-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all ${showCountryName ? 'bg-[var(--accent-primary)] after:translate-x-full after:border-white' : 'bg-[var(--border-subtle)]'}`}></div>
+                                </div>
                             </div>
 
                             <div className="flex items-center justify-between group cursor-pointer" onClick={() => setShowCoordinates(!showCoordinates)}>
                                 <span className="text-sm text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors">Show Coordinates</span>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" checked={showCoordinates} onChange={() => { }} className="sr-only peer" />
-                                    <div className={`w-9 h-5 rounded-full peer after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all ${showCoordinates ? 'bg-[var(--accent-primary)] after:translate-x-full after:border-white' : 'bg-[var(--border-subtle)]'}`}></div>
-                                </label>
+                                <div className="relative inline-flex items-center pointer-events-none">
+                                    <div className={`w-9 h-5 rounded-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all ${showCoordinates ? 'bg-[var(--accent-primary)] after:translate-x-full after:border-white' : 'bg-[var(--border-subtle)]'}`}></div>
+                                </div>
                             </div>
                         </div>
 
