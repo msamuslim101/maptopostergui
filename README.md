@@ -20,7 +20,7 @@ A premium, open-source desktop application for generating beautiful city map pos
 ## ✨ Features (v1.0)
 
 - **Global Coverage**: Generate high-resolution map posters for *any* city in the world
-- **10 Premium Themes**: Noir, Blueprint, Sunset, Magma, Ocean, Forest, Vintage, Atlas, Minimal, Copper
+- **10 Premium Themes**: Noir, Blueprint, Sunset, Midnight Blue, Ocean, Forest, Terracotta, Copper, Japanese Ink, Neon Cyberpunk
 - **Customizable Overlays**: Toggle city name, country name, and coordinates
 - **Adjustable Map Radius**: 5km - 30km for perfect framing
 - **Multiple Print Sizes**: 18×24", 24×36", 12×16", A3, A2
@@ -180,7 +180,14 @@ MapToPoster/
 
 ## 📄 License
 
-MIT License. Free for personal and commercial use.
+MIT License - Free for personal and commercial use.
+
+| Component | Author | License |
+|-----------|--------|--------|
+| Core Map Engine | [Ankur Gupta](https://github.com/originalankur/maptoposter) | MIT |
+| Desktop GUI Wrapper | [msamuslim101](https://github.com/msamuslim101/maptopostergui) | MIT |
+
+See [LICENSE](LICENSE) for full text.
 
 ---
 
