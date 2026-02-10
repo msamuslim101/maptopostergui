@@ -10,7 +10,7 @@ import {
 } from './api/client'
 
 // Wails bindings - these are auto-generated when you run `wails dev`
-import { Minimize, Maximize, Close, ShowSaveDialog, SaveFile, OpenFolder, IsWails } from '../wailsjs/go/main/App'
+import { Minimize, Maximize, Close, ShowSaveDialog, SaveFile, OpenFolder, IsLegacyMode } from '../wailsjs/go/main/App'
 
 // Lucide React Icons - inline SVG components for exact prototype match
 const MapIcon = () => (
@@ -166,6 +166,7 @@ function App() {
     const [toastMessage, setToastMessage] = useState<string | null>(null)
     const [exportedPosterPath, setExportedPosterPath] = useState<string | null>(null)
     const [isGenerating, setIsGenerating] = useState(false) // Separate from isLoading for generation state
+    const [legacyMode, setLegacyMode] = useState(false)
 
     // Settings state (persisted in localStorage)
     const [settings, setSettings] = useState(() => {
@@ -211,6 +212,10 @@ function App() {
             .catch(() => {
                 setBackendConnected(false)
             })
+
+        IsLegacyMode()
+            .then(enabled => setLegacyMode(enabled))
+            .catch(() => setLegacyMode(false))
     }, [])
 
     const handleThemeSelect = useCallback((id: string) => {
@@ -359,41 +364,43 @@ function App() {
     return (
         <div className="bg-[var(--bg-base)] text-[var(--text-primary)] h-screen w-screen overflow-hidden flex flex-col selection:bg-[var(--accent-primary)] selection:text-[var(--bg-base)] selection:bg-opacity-30 font-['Inter',sans-serif]">
 
-            {/* TITLE BAR (V1 Feature) */}
-            <div className="h-[40px] flex items-center justify-between px-4 bg-[var(--bg-surface)]/50 border-b border-[var(--border-subtle)] select-none draggable-region z-50">
-                <div className="flex items-center gap-2 text-sm font-medium opacity-80">
-                    <span className="text-[var(--accent-primary)]"><MapIcon /></span>
-                    <span>MapToPoster</span>
-                </div>
-                <div className="flex items-center gap-4">
-                    {/* Settings Button */}
-                    <button
-                        onClick={() => setShowSettingsModal(true)}
-                        className="text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors p-1 rounded hover:bg-white/5"
-                        title="Settings"
-                    >
-                        <SettingsIcon />
-                    </button>
-                    {/* Window Controls (Wails) */}
-                    <div className="flex gap-2">
-                        <div
-                            onClick={() => Minimize()}
-                            className="w-3 h-3 rounded-full bg-yellow-500/20 hover:bg-yellow-500 transition-colors cursor-pointer"
-                            title="Minimize"
-                        ></div>
-                        <div
-                            onClick={() => Maximize()}
-                            className="w-3 h-3 rounded-full bg-green-500/20 hover:bg-green-500 transition-colors cursor-pointer"
-                            title="Maximize"
-                        ></div>
-                        <div
-                            onClick={() => Close()}
-                            className="w-3 h-3 rounded-full bg-red-500/20 hover:bg-red-500 transition-colors cursor-pointer"
-                            title="Close"
-                        ></div>
+            {/* TITLE BAR (disabled in Windows 7 legacy mode to avoid duplicate chrome) */}
+            {!legacyMode && (
+                <div className="h-[40px] flex items-center justify-between px-4 bg-[var(--bg-surface)]/50 border-b border-[var(--border-subtle)] select-none draggable-region z-50">
+                    <div className="flex items-center gap-2 text-sm font-medium opacity-80">
+                        <span className="text-[var(--accent-primary)]"><MapIcon /></span>
+                        <span>MapToPoster</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        {/* Settings Button */}
+                        <button
+                            onClick={() => setShowSettingsModal(true)}
+                            className="text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors p-1 rounded hover:bg-white/5"
+                            title="Settings"
+                        >
+                            <SettingsIcon />
+                        </button>
+                        {/* Window Controls (Wails) */}
+                        <div className="flex gap-2">
+                            <div
+                                onClick={() => Minimize()}
+                                className="w-3 h-3 rounded-full bg-yellow-500/20 hover:bg-yellow-500 transition-colors cursor-pointer"
+                                title="Minimize"
+                            ></div>
+                            <div
+                                onClick={() => Maximize()}
+                                className="w-3 h-3 rounded-full bg-green-500/20 hover:bg-green-500 transition-colors cursor-pointer"
+                                title="Maximize"
+                            ></div>
+                            <div
+                                onClick={() => Close()}
+                                className="w-3 h-3 rounded-full bg-red-500/20 hover:bg-red-500 transition-colors cursor-pointer"
+                                title="Close"
+                            ></div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* MAIN CONTENT ROW */}
             <div className="flex-1 flex overflow-hidden">

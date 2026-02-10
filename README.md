@@ -47,8 +47,21 @@ MapToPoster/
 
 > ⚠️ **Important**: Keep both files together. The app won't work without `python/server.exe`.
 
+
+### Windows 7 (Legacy Mode)
+
+For older systems, launch the app with legacy mode enabled:
+
+```bat
+set MTP_LEGACY_WIN7=1
+MapToPoster.exe
+```
+
+Legacy mode disables the custom frameless window and uses a smaller default window footprint for better compatibility on Windows 7.
+
 ### System Requirements
 - Windows 10/11 (64-bit)
+- Windows 7 SP1 (Legacy mode, reduced window features)
 - ~200MB disk space
 - Internet connection (for downloading map data)
 
