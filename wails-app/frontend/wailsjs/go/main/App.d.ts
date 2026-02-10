@@ -5,6 +5,8 @@ export function Close():Promise<void>;
 
 export function GetBackendStatus():Promise<string>;
 
+export function IsLegacyMode():Promise<boolean>;
+
 export function IsWails():Promise<boolean>;
 
 export function Maximize():Promise<void>;

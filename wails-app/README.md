@@ -59,3 +59,15 @@ Copy-Item "dist/server.exe" "../wails-app/python/server.exe"
 ## Author
 
 **msamuslim101** - GUI Design & Wails Implementation
+
+
+## Windows 7 Legacy Runtime
+
+The app includes an optional legacy mode for Windows 7 compatibility:
+
+```bat
+set MTP_LEGACY_WIN7=1
+MapToPoster.exe
+```
+
+When enabled, Wails runs with a native titlebar (non-frameless) and reduced default/minimum window sizes to avoid custom chrome rendering issues on older systems.
