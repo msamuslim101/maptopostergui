@@ -8,6 +8,7 @@ import {
     type Theme as APITheme,
     type JobStatus
 } from './api/client'
+import { renderBrowserPoster, exportCanvas, extensionForFormat, type BrowserPosterTheme, type BrowserExportFormat } from './browser'
 
 // Wails bindings - these are auto-generated when you run `wails dev`
 import { Minimize, Maximize, Close, ShowSaveDialog, SaveFile, OpenFolder, IsWails } from '../wailsjs/go/main/App'
@@ -159,6 +160,7 @@ function App() {
     const [backendConnected, setBackendConnected] = useState(false)
     const [distance, setDistance] = useState(15000)  // NEW: default 15km
     const [posterSize, setPosterSize] = useState('18x24')  // NEW
+    const [outputFormat, setOutputFormat] = useState<BrowserExportFormat>('png')
 
     // New state for 5 improvements
     const [zoomLevel, setZoomLevel] = useState(100)
@@ -166,6 +168,7 @@ function App() {
     const [toastMessage, setToastMessage] = useState<string | null>(null)
     const [exportedPosterPath, setExportedPosterPath] = useState<string | null>(null)
     const [isGenerating, setIsGenerating] = useState(false) // Separate from isLoading for generation state
+    const [generationMode, setGenerationMode] = useState<'browser' | 'backend'>('browser')
 
     // Settings state (persisted in localStorage)
     const [settings, setSettings] = useState(() => {
@@ -226,6 +229,38 @@ function App() {
         }, 600)
     }, [selectedThemeId])
 
+    const getPosterDimensions = useCallback((size: string, layout: 'portrait' | 'landscape') => {
+        const baseMap: Record<string, { w: number, h: number }> = {
+            '12x16': { w: 1200, h: 1600 },
+            '18x24': { w: 1800, h: 2400 },
+            '24x36': { w: 2400, h: 3600 },
+            'A3': { w: 1754, h: 2480 },
+            'A2': { w: 2480, h: 3508 }
+        }
+
+        const base = baseMap[size] || baseMap['18x24']
+        return layout === 'portrait'
+            ? { width: base.w, height: base.h }
+            : { width: base.h, height: base.w }
+    }, [])
+
+    const buildBrowserTheme = useCallback((): BrowserPosterTheme => {
+        const apiTheme = apiThemes.find(t => t.id === selectedThemeId)
+        const fallback = selectedTheme
+
+        const background = apiTheme?.bg || fallback?.color || '#111827'
+        const text = apiTheme?.text || '#F9FAFB'
+
+        return {
+            id: selectedThemeId || 'custom',
+            name: apiTheme?.name || fallback?.name || 'Custom Theme',
+            background,
+            roadPrimary: text,
+            roadSecondary: `${text}99`,
+            text,
+        }
+    }, [apiThemes, selectedTheme, selectedThemeId])
+
     // Real export with API call
     const handleExport = async () => {
         if (!cityInput || !countryInput || !selectedThemeId) {
@@ -239,6 +274,42 @@ function App() {
         setProgress(0)
 
         try {
+            if (generationMode === 'browser') {
+                setLoadingMessage('Rendering in browser...')
+                setProgress(30)
+
+                const { width, height } = getPosterDimensions(posterSize, orientation)
+                const canvas = document.createElement('canvas')
+
+                renderBrowserPoster(canvas, {
+                    city: cityInput,
+                    country: countryInput,
+                    width,
+                    height,
+                    showCityName,
+                    showCountryName,
+                    showCoordinates,
+                    coordinatesLabel: showCoordinates ? 'Browser Mode Preview' : undefined,
+                    theme: buildBrowserTheme(),
+                })
+
+                setProgress(80)
+                const blob = await exportCanvas(canvas, outputFormat)
+                const objectUrl = URL.createObjectURL(blob)
+                const ext = extensionForFormat(outputFormat)
+
+                setPosterImageUrl(objectUrl)
+                const generatedBase = filename || `${cityInput.toLowerCase().replace(/\s+/g, '_')}_${selectedThemeId || 'theme'}_browser`
+                setFilename(generatedBase.replace(/\.(png|jpg|jpeg|svg)$/i, ''))
+                setExportedPosterPath(`Generated in browser (no backend) as .${ext}`)
+                setLoadingMessage('Rendered successfully in browser')
+                setProgress(100)
+                setIsLoading(false)
+                setIsGenerating(false)
+                setShowModal(true)
+                return
+            }
+
             // Start the generation job
             const jobId = await generatePoster({
                 city: cityInput,
@@ -250,7 +321,8 @@ function App() {
                 show_coordinates: showCoordinates,
                 orientation: orientation,
                 poster_size: posterSize,
-                filename: filename || undefined
+                filename: filename || undefined,
+                output_format: outputFormat
             })
 
             // Poll for completion
@@ -264,7 +336,7 @@ function App() {
                 const posterFilename = result.result_path.split('/').pop() || result.result_path.split('\\').pop()
                 if (posterFilename) {
                     setPosterImageUrl(getPosterUrl(posterFilename))
-                    setFilename(posterFilename.replace('.png', ''))
+                    setFilename(posterFilename.replace(/\.(png|jpg|jpeg|svg)$/i, ''))
                     setExportedPosterPath(result.result_path)
                 }
             }
@@ -303,9 +375,28 @@ function App() {
     const handleDownload = async () => {
         if (!posterImageUrl) return
 
+        if (posterImageUrl.startsWith('blob:') || posterImageUrl.startsWith('data:')) {
+            try {
+                const response = await fetch(posterImageUrl)
+                const blob = await response.blob()
+                const url = window.URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `${filename || 'map_poster'}.${extensionForFormat(outputFormat)}`
+                document.body.appendChild(a)
+                a.click()
+                document.body.removeChild(a)
+                window.URL.revokeObjectURL(url)
+                showToast('Download started!')
+            } catch {
+                showToast('Download failed')
+            }
+            return
+        }
+
         try {
             // Use native save dialog (Wails)
-            const defaultName = `${filename || 'map_poster'}.png`
+            const defaultName = `${filename || 'map_poster'}.${extensionForFormat(outputFormat)}`
             const savePath = await ShowSaveDialog(defaultName)
 
             if (savePath) {
@@ -326,7 +417,7 @@ function App() {
                 const url = window.URL.createObjectURL(blob)
                 const a = document.createElement('a')
                 a.href = url
-                a.download = `${filename || 'map_poster'}.png`
+                a.download = `${filename || 'map_poster'}.${extensionForFormat(outputFormat)}`
                 document.body.appendChild(a)
                 a.click()
                 document.body.removeChild(a)
@@ -792,7 +883,24 @@ function App() {
                                     onChange={(e) => setFilename(e.target.value)}
                                     className="rounded-l-lg bg-[var(--bg-base)] border border-[var(--border-subtle)] text-[var(--text-primary)] focus:ring-1 focus:ring-[var(--accent-primary)] focus:border-[var(--accent-primary)] block flex-1 min-w-0 w-full text-sm border-r-0 p-2.5 focus:outline-none"
                                 />
-                                <span className="inline-flex items-center px-3 text-sm text-[var(--text-muted)] bg-[var(--bg-subtle)] border border-l-0 border-[var(--border-subtle)] rounded-r-lg">.png</span>
+                                <span className="inline-flex items-center px-3 text-sm text-[var(--text-muted)] bg-[var(--bg-subtle)] border border-l-0 border-[var(--border-subtle)] rounded-r-lg">.{extensionForFormat(outputFormat)}</span>
+                            </div>
+                        </div>
+
+                        {/* Output format */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-[var(--text-secondary)]">Output Format</label>
+                            <div className="relative">
+                                <select
+                                    value={outputFormat}
+                                    onChange={(e) => setOutputFormat(e.target.value as BrowserExportFormat)}
+                                    className="appearance-none block w-full bg-[var(--bg-base)] border border-[var(--border-subtle)] text-white text-sm rounded-lg focus:ring-1 focus:ring-[var(--accent-primary)] focus:border-[var(--accent-primary)] p-2.5 pr-8 focus:outline-none"
+                                >
+                                    <option value="png">PNG</option>
+                                    <option value="jpg">JPG</option>
+                                    <option value="svg">SVG</option>
+                                </select>
+                                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none"><ChevronDownIcon /></span>
                             </div>
                         </div>
 
@@ -800,13 +908,28 @@ function App() {
 
                     {/* Footer Actions */}
                     <div className="p-6 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-4">
+                        <div className="bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-lg p-1 flex">
+                            <button
+                                onClick={() => setGenerationMode('browser')}
+                                className={`flex-1 text-xs py-2 rounded-md transition-colors ${generationMode === 'browser' ? 'bg-[var(--accent-primary)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
+                            >
+                                Browser Mode (Zero Cost)
+                            </button>
+                            <button
+                                onClick={() => setGenerationMode('backend')}
+                                className={`flex-1 text-xs py-2 rounded-md transition-colors ${generationMode === 'backend' ? 'bg-[var(--accent-primary)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
+                            >
+                                Backend Mode
+                            </button>
+                        </div>
+
                         <button
                             onClick={handleExport}
                             disabled={!showPreview}
                             className="w-full text-white bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed font-bold rounded-lg text-sm px-5 py-3.5 focus:outline-none transition-all flex items-center justify-center gap-2 shadow-lg shadow-[var(--accent-primary)]/20 active:scale-[0.98]"
                         >
                             <DownloadIcon />
-                            Export Poster
+                            {generationMode === 'browser' ? 'Export in Browser' : 'Export Poster'}
                         </button>
                     </div>
                 </aside>

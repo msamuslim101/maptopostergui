@@ -36,7 +36,7 @@ def load_fonts():
 
 FONTS = load_fonts()
 
-def generate_output_filename(city, theme_name):
+def generate_output_filename(city, theme_name, output_format="png"):
     """
     Generate unique output filename with city, theme, and datetime.
     """
@@ -45,7 +45,10 @@ def generate_output_filename(city, theme_name):
     
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     city_slug = city.lower().replace(' ', '_')
-    filename = f"{city_slug}_{theme_name}_{timestamp}.png"
+    fmt = (output_format or 'png').lower()
+    if fmt == 'jpg':
+        fmt = 'jpeg'
+    filename = f"{city_slug}_{theme_name}_{timestamp}.{fmt}"
     return os.path.join(POSTERS_DIR, filename)
 
 def get_available_themes():
@@ -215,7 +218,7 @@ def get_coordinates(city, country):
 
 def create_poster(city, country, point, dist, output_file,
                   show_city_name=True, show_country_name=True, show_coordinates=True,
-                  orientation='portrait', poster_size='18x24'):
+                  orientation='portrait', poster_size='18x24', output_format='png'):
     """
     Generate a map poster with customizable options.
     
@@ -230,6 +233,7 @@ def create_poster(city, country, point, dist, output_file,
         show_coordinates: Whether to show coordinates text
         orientation: 'portrait' or 'landscape'
         poster_size: Size preset ('18x24', '24x36', '12x16', 'A3', 'A2')
+        output_format: Output format ('png', 'jpg'/'jpeg', 'svg')
     """
     print(f"\nGenerating map for {city}, {country}...")
     
@@ -354,8 +358,16 @@ def create_poster(city, country, point, dist, output_file,
             fontproperties=font_attr, zorder=11)
 
     # 5. Save
-    print(f"Saving to {output_file}...")
-    plt.savefig(output_file, dpi=300, facecolor=THEME['bg'])
+    fmt = (output_format or 'png').lower()
+    if fmt == 'jpg':
+        fmt = 'jpeg'
+
+    print(f"Saving to {output_file} (format={fmt})...")
+    save_kwargs = {'facecolor': THEME['bg'], 'format': fmt}
+    if fmt in ['png', 'jpeg']:
+        save_kwargs['dpi'] = 300
+
+    plt.savefig(output_file, **save_kwargs)
     plt.close()
     print(f"[OK] Done! Poster saved as {output_file}")
 
@@ -458,6 +470,7 @@ Examples:
     parser.add_argument('--theme', '-t', type=str, default='feature_based', help='Theme name (default: feature_based)')
     parser.add_argument('--distance', '-d', type=int, default=29000, help='Map radius in meters (default: 29000)')
     parser.add_argument('--list-themes', action='store_true', help='List all available themes')
+    parser.add_argument('--format', '-f', type=str, default='png', choices=['png', 'jpg', 'jpeg', 'svg'], help='Output format (png, jpg, jpeg, svg)')
     
     args = parser.parse_args()
     
@@ -494,8 +507,8 @@ Examples:
     # Get coordinates and generate poster
     try:
         coords = get_coordinates(args.city, args.country)
-        output_file = generate_output_filename(args.city, args.theme)
-        create_poster(args.city, args.country, coords, args.distance, output_file)
+        output_file = generate_output_filename(args.city, args.theme, args.format)
+        create_poster(args.city, args.country, coords, args.distance, output_file, output_format=args.format)
         
         print("\n" + "=" * 50)
         print("[OK] Poster generation complete!")

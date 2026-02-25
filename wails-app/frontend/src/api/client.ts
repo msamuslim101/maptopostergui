@@ -3,7 +3,26 @@
  * Connects React frontend to FastAPI backend
  */
 
-const API_BASE = 'http://127.0.0.1:8000';
+function normalizeBase(url: string): string {
+    return url.endsWith('/') ? url.slice(0, -1) : url;
+}
+
+function resolveApiBase(): string {
+    const envBase = import.meta.env.VITE_API_BASE_URL?.trim();
+    if (envBase) {
+        return normalizeBase(envBase);
+    }
+
+    // Browser-hosted web mode fallback: use same origin when available.
+    if (typeof window !== 'undefined' && window.location.origin.startsWith('http')) {
+        return normalizeBase(window.location.origin);
+    }
+
+    // Desktop/Wails fallback for local Python sidecar.
+    return 'http://127.0.0.1:8000';
+}
+
+export const API_BASE = resolveApiBase();
 
 export interface Theme {
     id: string;
@@ -19,11 +38,12 @@ export interface GenerateRequest {
     theme: string;
     distance?: number;
     show_city_name?: boolean;
-    show_country_name?: boolean;  // NEW
+    show_country_name?: boolean;
     show_coordinates?: boolean;
-    orientation?: 'portrait' | 'landscape';  // NEW
-    poster_size?: string;  // NEW: '18x24', '24x36', '12x16', 'A3', 'A2'
-    filename?: string;  // NEW
+    orientation?: 'portrait' | 'landscape';
+    poster_size?: string;
+    filename?: string;
+    output_format?: "png" | "jpg" | "jpeg" | "svg";
 }
 
 export interface JobStatus {

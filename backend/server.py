@@ -54,6 +54,16 @@ app.add_middleware(
 # Store for active generation jobs
 jobs: dict = {}
 
+
+def normalize_output_format(fmt: str) -> str:
+    normalized = (fmt or "png").lower()
+    if normalized == "jpg":
+        normalized = "jpeg"
+    allowed = {"png", "jpeg", "svg"}
+    if normalized not in allowed:
+        raise HTTPException(status_code=400, detail="output_format must be one of: png, jpg/jpeg, svg")
+    return normalized
+
 # Request/Response Models
 class GenerateRequest(BaseModel):
     city: str
@@ -66,6 +76,7 @@ class GenerateRequest(BaseModel):
     orientation: str = "portrait"    # NEW: 'portrait' or 'landscape'
     poster_size: str = "18x24"       # NEW: '18x24', '24x36', '12x16', 'A3', 'A2'
     filename: str = ""               # NEW: optional custom filename
+    output_format: str = "png"       # NEW: png, jpg/jpeg, svg
 
 class GenerateResponse(BaseModel):
     job_id: str
@@ -110,13 +121,18 @@ async def generate_map_task(job_id: str, request: GenerateRequest):
         jobs[job_id]["progress"] = 40
         jobs[job_id]["message"] = "Downloading map data..."
         
+        output_format = normalize_output_format(request.output_format)
+
         # Generate output filename (use custom if provided, else auto-generate)
         if request.filename and request.filename.strip():
-            # Ensure filename ends with .png and is in posters dir
-            clean_name = request.filename.strip().replace('.png', '')
-            output_file = os.path.join(MAPTOPOSTER_DIR, "posters", f"{clean_name}.png")
+            clean_name = request.filename.strip()
+            for ext in ['.png', '.jpg', '.jpeg', '.svg']:
+                if clean_name.lower().endswith(ext):
+                    clean_name = clean_name[:-len(ext)]
+                    break
+            output_file = os.path.join(MAPTOPOSTER_DIR, "posters", f"{clean_name}.{output_format}")
         else:
-            output_file = generate_output_filename(request.city, request.theme)
+            output_file = generate_output_filename(request.city, request.theme, output_format)
         
         jobs[job_id]["progress"] = 50
         jobs[job_id]["message"] = "Rendering poster..."
@@ -135,7 +151,8 @@ async def generate_map_task(job_id: str, request: GenerateRequest):
             show_country_name=request.show_country_name,
             show_coordinates=request.show_coordinates,
             orientation=request.orientation,
-            poster_size=request.poster_size
+            poster_size=request.poster_size,
+            output_format=output_format
         )
         
         # Run in executor to not block
@@ -198,6 +215,9 @@ async def generate_poster(request: GenerateRequest, background_tasks: Background
     Start a map poster generation job.
     Returns a job_id that can be polled for status.
     """
+    # Validate output format
+    normalize_output_format(request.output_format)
+
     # Validate theme exists
     available_themes = get_available_themes()
     if request.theme not in available_themes:
@@ -253,9 +273,17 @@ async def get_poster(filename: str):
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Poster not found")
     
+    ext = os.path.splitext(filename)[1].lower()
+    media_types = {
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.svg': 'image/svg+xml',
+    }
+
     return FileResponse(
-        file_path, 
-        media_type="image/png",
+        file_path,
+        media_type=media_types.get(ext, 'application/octet-stream'),
         filename=filename
     )
 
@@ -270,7 +298,7 @@ async def list_posters():
     
     posters = []
     for f in os.listdir(posters_dir):
-        if f.endswith('.png'):
+        if f.lower().endswith(('.png', '.jpg', '.jpeg', '.svg')):
             file_path = os.path.join(posters_dir, f)
             stat = os.stat(file_path)
             posters.append({

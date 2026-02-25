@@ -69,6 +69,33 @@ This project is a **desktop GUI wrapper** for [originalankur/maptoposter](https:
 
 ---
 
+## 🌍 Netlify Deployment Status
+
+Short answer: **you can deploy the frontend to Netlify now, but full poster generation will not work yet without a backend or full Option B UI integration.**
+
+### What works on Netlify today
+- Frontend app hosting (React UI)
+- Static assets and navigation
+
+### What does NOT fully work yet
+- Existing Generate flow still depends on backend API endpoints (`/api/...`) unless you connect a backend URL.
+- New browser renderer foundation exists in code, but it is not wired into the main Generate UX yet.
+
+### To make Netlify build usable right now
+1. Set `VITE_API_BASE_URL` to a reachable API service, **or**
+2. Add Netlify reverse-proxy rules to forward `/api/*` to your API origin.
+
+> If you want truly zero-server-cost end-to-end on Netlify, next step is wiring the browser renderer path into `App.tsx` generation flow.
+
+## 🌐 Browser/Serverless Feasibility
+
+A technical feasibility note for migrating to a browser-native architecture is available here:
+
+- `docs/serverless-browser-feasibility.md`
+- `docs/netlify-deployment.md`
+
+> ✅ Current recommendation in that document: **Option B (browser-first JS engine)** to minimize ongoing server costs.
+
 ## 🚧 Roadmap (Planned Features)
 
 ### UI Components (Coming Soon)
