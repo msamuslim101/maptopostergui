@@ -48,20 +48,14 @@ MapToPoster/
 > ⚠️ **Important**: Keep both files together. The app won't work without `python/server.exe`.
 
 
-### Windows 7 (Legacy Mode)
+### Windows 7 Legacy Mode (⚠️ Dormant)
 
-For older systems, launch the app with legacy mode enabled:
+The codebase includes an experimental legacy mode for Windows 7 (`MTP_LEGACY_WIN7=1`), but it is **not currently functional** as a Win7 build. Building a true Win7-compatible binary requires Go 1.20.x and Python 3.8.x, which are not used in the current release.
 
-```bat
-set MTP_LEGACY_WIN7=1
-MapToPoster.exe
-```
-
-Legacy mode disables the custom frameless window and uses a smaller default window footprint for better compatibility on Windows 7.
+The legacy mode code remains in the codebase harmlessly — it only activates when the environment variable is explicitly set, and has **zero effect** on the normal Win10/11 app.
 
 ### System Requirements
 - Windows 10/11 (64-bit)
-- Windows 7 SP1 (Legacy mode, reduced window features)
 - ~200MB disk space
 - Internet connection (for downloading map data)
 
@@ -110,17 +104,13 @@ This project is a **desktop GUI wrapper** for [originalankur/maptoposter](https:
 
 ---
 
-### Windows 7 Compatibility Notes
+### Windows 7 Compatibility Notes (⚠️ Dormant)
 
-This repository now includes a **legacy runtime mode** (`MTP_LEGACY_WIN7=1`) and `wails-app/scripts/start-legacy-win7.bat`.
+This repository includes a **dormant** legacy runtime mode (`MTP_LEGACY_WIN7=1`) and `wails-app/scripts/start-legacy-win7.bat`. This feature is **not actively maintained** and cannot be built with the current toolchain.
 
-Important constraints for true Windows 7 distribution:
-- **WebView2 Runtime is mandatory** (Wails uses WebView2). Install it before launching.
-  > ⚠️ Microsoft ended official WebView2 support for Windows 7 in late 2022. The runtime may still work, but it no longer receives security updates for Win7. Test on your target machine before distributing.
-- For legacy packaging/build pipelines, prefer an older toolchain profile:
-  - Go 1.20.x for Win7-focused builds
-  - Python 3.8.x when rebuilding backend `server.exe` for maximum Win7 compatibility
-- End users should download packaged artifacts and do not need local Python installed when `python/server.exe` is included.
+> ⚠️ **Why this doesn't work yet:** Go 1.21+ and Python 3.9+ dropped Windows 7 support. The current project uses Go 1.25 and Python 3.14, so binaries produced will not run on Win7. Building a functional Win7 version requires installing Go 1.20.x and Python 3.8.x in a separate environment. Microsoft also ended WebView2 support for Win7 in late 2022.
+
+The code is kept in the codebase as it has zero impact on the main Win10/11 app — it only activates when `MTP_LEGACY_WIN7=1` is explicitly set.
 
 ## 🛠️ For Developers
 
