@@ -16,13 +16,16 @@ import (
 
 // App struct holds the application context and state
 type App struct {
-	ctx       context.Context
-	pythonCmd *exec.Cmd // Reference to managed Python process
+	ctx        context.Context
+	pythonCmd  *exec.Cmd // Reference to managed Python process
+	legacyMode bool
 }
 
 // NewApp creates a new App application struct
 func NewApp() *App {
-	return &App{}
+	return &App{
+		legacyMode: os.Getenv("MTP_LEGACY_WIN7") == "1",
+	}
 }
 
 // startup is called when the app starts. The context is saved
@@ -224,6 +227,11 @@ func (a *App) OpenFolder(filePath string) error {
 }
 
 // ============ UTILITY ============
+
+// IsLegacyMode returns true when Windows 7 compatibility mode is enabled
+func (a *App) IsLegacyMode() bool {
+	return a.legacyMode
+}
 
 // IsWails returns true to indicate we're running in Wails environment
 func (a *App) IsWails() bool {

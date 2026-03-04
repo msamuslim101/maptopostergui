@@ -47,8 +47,21 @@ MapToPoster/
 
 > ⚠️ **Important**: Keep both files together. The app won't work without `python/server.exe`.
 
+
+### Windows 7 (Legacy Mode)
+
+For older systems, launch the app with legacy mode enabled:
+
+```bat
+set MTP_LEGACY_WIN7=1
+MapToPoster.exe
+```
+
+Legacy mode disables the custom frameless window and uses a smaller default window footprint for better compatibility on Windows 7.
+
 ### System Requirements
 - Windows 10/11 (64-bit)
+- Windows 7 SP1 (Legacy mode, reduced window features)
 - ~200MB disk space
 - Internet connection (for downloading map data)
 
@@ -97,12 +110,24 @@ This project is a **desktop GUI wrapper** for [originalankur/maptoposter](https:
 
 ---
 
+### Windows 7 Compatibility Notes
+
+This repository now includes a **legacy runtime mode** (`MTP_LEGACY_WIN7=1`) and `wails-app/scripts/start-legacy-win7.bat`.
+
+Important constraints for true Windows 7 distribution:
+- **WebView2 Runtime is mandatory** (Wails uses WebView2). Install it before launching.
+  > ⚠️ Microsoft ended official WebView2 support for Windows 7 in late 2022. The runtime may still work, but it no longer receives security updates for Win7. Test on your target machine before distributing.
+- For legacy packaging/build pipelines, prefer an older toolchain profile:
+  - Go 1.20.x for Win7-focused builds
+  - Python 3.8.x when rebuilding backend `server.exe` for maximum Win7 compatibility
+- End users should download packaged artifacts and do not need local Python installed when `python/server.exe` is included.
+
 ## 🛠️ For Developers
 
 ### Prerequisites
 - **Go** 1.21+ ([download](https://go.dev/dl/))
 - **Node.js** 18+ ([download](https://nodejs.org/))
-- **Python** 3.11+ ([download](https://python.org/))
+- **Python** 3.11+ ([download](https://python.org/)) *(dev/build only; end users do NOT need Python if `python/server.exe` is bundled)*
 - **Wails CLI**: `go install github.com/wailsapp/wails/v2/cmd/wails@latest`
 
 ### Development Setup
@@ -200,3 +225,18 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+## 🚀 Release Packaging (for normal users)
+
+Publish a ZIP with this structure:
+
+```
+MapToPoster/
+├── MapToPoster.exe
+├── python/
+│   └── server.exe
+└── scripts/
+    └── start-legacy-win7.bat
+```
+
+This gives users one-click normal launch (`MapToPoster.exe`) and one-click Win7-compatible launch (`scripts/start-legacy-win7.bat`).

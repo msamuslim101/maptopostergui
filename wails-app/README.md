@@ -59,3 +59,31 @@ Copy-Item "dist/server.exe" "../wails-app/python/server.exe"
 ## Author
 
 **msamuslim101** - GUI Design & Wails Implementation
+
+
+## Windows 7 Legacy Runtime
+
+The app includes an optional legacy mode for Windows 7 compatibility:
+
+```bat
+set MTP_LEGACY_WIN7=1
+MapToPoster.exe
+```
+
+When enabled, Wails runs with a native titlebar (non-frameless) and reduced default/minimum window sizes to avoid custom chrome rendering issues on older systems.
+
+
+## WebView2 Requirement
+
+Wails uses Microsoft Edge WebView2 on Windows. For Windows 7 installs, ensure WebView2 Runtime is present before launching:
+- Evergreen bootstrapper: https://go.microsoft.com/fwlink/p/?LinkId=2124703
+
+Use `scripts/start-legacy-win7.bat` in packaged releases to launch with `MTP_LEGACY_WIN7=1` and show a prerequisite warning if WebView2 is missing.
+
+## Legacy Build Profile (Win7-focused)
+
+For best compatibility when producing legacy binaries:
+- Go 1.20.x
+- Python 3.8.x when rebuilding `python/server.exe`
+
+(Regular development can continue with newer versions.)

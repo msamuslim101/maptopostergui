@@ -10,6 +10,10 @@ export function GetBackendStatus() {
   return window['go']['main']['App']['GetBackendStatus']();
 }
 
+export function IsLegacyMode() {
+  return window['go']['main']['App']['IsLegacyMode']();
+}
+
 export function IsWails() {
   return window['go']['main']['App']['IsWails']();
 }
