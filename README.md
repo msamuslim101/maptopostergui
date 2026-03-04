@@ -1,6 +1,6 @@
 # MapToPosterGUI 🗺️
 
-[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://github.com/msamuslim101/maptopostergui)
+[![Version](https://img.shields.io/badge/version-1.1.0-green.svg)](https://github.com/msamuslim101/maptopostergui)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)]()
 [![Stack](https://img.shields.io/badge/stack-Wails%20%7C%20Go%20%7C%20React%20%7C%20Python-blueviolet)]()
@@ -17,7 +17,7 @@ A premium, open-source desktop application for generating beautiful city map pos
 
 ---
 
-## ✨ Features (v1.0)
+## ✨ Features (v1.1)
 
 - **Global Coverage**: Generate high-resolution map posters for *any* city in the world
 - **10 Premium Themes**: Noir, Blueprint, Sunset, Midnight Blue, Ocean, Forest, Terracotta, Copper, Japanese Ink, Neon Cyberpunk

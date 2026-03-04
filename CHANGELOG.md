@@ -4,6 +4,24 @@ All notable changes to MapToPosterGUI will be documented in this file.
 
 ---
 
+## [1.1.0] - 2026-03-04
+
+### 🏗️ Major Refactoring & Modularization
+- **Frontend Architecture**: Split monolithic `App.tsx` into reusable components (`MainCanvas`, `SidebarLeft`, `SidebarRight`, etc.).
+- **State Management**: Extracted global state to `AppContext.tsx` for better performance and maintainability.
+- **Backend Isolation**: Moved server logic to `tasks.py`, `models.py`, and `store.py`; converted to a robust background task-queue system.
+- **Go Logic Extraction**: Separated window management and Python process control into dedicated Go modules.
+
+### ✨ Added
+- **Improved UI**: Enhanced sidebars with better grouping, glassmorphism headers, and smoother transitions.
+
+### 🔧 Fixed & Improved
+- **Process Management**: Fixed zombie Python processes by implementing a robust `taskkill` signal handler in the Go wrapper.
+- **Race conditions**: Implemented a retry loop for the GUI to fetch themes, ensuring the backend is ready before the UI fails.
+- **Project Structure**: Cleaned up the root directory and organized research documentation.
+
+---
+
 ## [1.0.0] - 2026-01-31
 
 ### 🎉 Initial Release
