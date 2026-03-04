@@ -12,6 +12,9 @@ backend/.venv/
 backend/__pycache__/
 *.spec
 
+# Vite Temp Files
+vite.config.ts.timestamp-*.mjs
+
 # Build Artifacts
 react-windows/dist/
 electron-app/dist/
