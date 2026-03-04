@@ -116,6 +116,7 @@ This repository now includes a **legacy runtime mode** (`MTP_LEGACY_WIN7=1`) and
 
 Important constraints for true Windows 7 distribution:
 - **WebView2 Runtime is mandatory** (Wails uses WebView2). Install it before launching.
+  > ⚠️ Microsoft ended official WebView2 support for Windows 7 in late 2022. The runtime may still work, but it no longer receives security updates for Win7. Test on your target machine before distributing.
 - For legacy packaging/build pipelines, prefer an older toolchain profile:
   - Go 1.20.x for Win7-focused builds
   - Python 3.8.x when rebuilding backend `server.exe` for maximum Win7 compatibility

@@ -372,14 +372,6 @@ function App() {
                         <span>MapToPoster</span>
                     </div>
                     <div className="flex items-center gap-4">
-                        {/* Settings Button */}
-                        <button
-                            onClick={() => setShowSettingsModal(true)}
-                            className="text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors p-1 rounded hover:bg-white/5"
-                            title="Settings"
-                        >
-                            <SettingsIcon />
-                        </button>
                         {/* Window Controls (Wails) */}
                         <div className="flex gap-2">
                             <div
@@ -410,8 +402,15 @@ function App() {
 
                     {/* Header */}
                     <div className="px-6 py-5">
-                        <h1 className="text-[var(--text-primary)] tracking-tight text-xl font-bold flex items-center gap-2">
-                            Create Poster
+                        <h1 className="text-[var(--text-primary)] tracking-tight text-xl font-bold flex items-center justify-between">
+                            <span className="flex items-center gap-2">Create Poster</span>
+                            <button
+                                onClick={() => setShowSettingsModal(true)}
+                                className="text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors p-1.5 rounded-lg hover:bg-white/5"
+                                title="Settings"
+                            >
+                                <SettingsIcon />
+                            </button>
                         </h1>
                     </div>
 
@@ -551,6 +550,12 @@ function App() {
                     {/* Footer */}
                     <div className="p-4 border-t border-[var(--border-subtle)] text-center">
                         <p className="text-[10px] text-[var(--text-muted)]">v3.0.0 • Final Design</p>
+                        {legacyMode && (
+                            <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                <span className="text-[10px] font-semibold text-amber-400 uppercase tracking-wider">Windows 7 Legacy Mode</span>
+                            </div>
+                        )}
                     </div>
                 </aside>
 
