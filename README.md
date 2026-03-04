@@ -61,6 +61,19 @@ The legacy mode code remains in the codebase harmlessly — it only activates wh
 
 ---
 
+## ❓ Frequently Asked Questions
+
+**Q: Does the app need to be in the same folder as `create_map_poster.py`?**
+**A:** If you are using the **Bundled Release** (the ZIP from the Releases page), **No.** The app is "Plug & Play" and handles all internal script management for you. If you are a developer running from **Source Code**, the app expects the backend scripts to be in the `backend/` folder relative to the executable.
+
+**Q: Why does the first generation take so long?**
+**A:** The first time you generate a map for a new city, the engine must download several megabytes of OpenStreetMap data and cache it locally. Subsequent generations for the same city will be significantly faster.
+
+**Q: Is it safe to delete the `python/` folder?**
+**A:** **No.** The `MapToPoster.exe` is a frontend wrapper; it requires the `python/server.exe` sidecar found in that folder to perform the actual map rendering.
+
+---
+
 ## 🙏 Attribution & Upstream
 
 This project is a **desktop GUI wrapper** for [originalankur/maptoposter](https://github.com/originalankur/maptoposter).
