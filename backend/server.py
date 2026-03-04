@@ -7,8 +7,6 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
-from typing import Optional
 import os
 import sys
 import json
@@ -27,14 +25,12 @@ else:
 sys.path.insert(0, MAPTOPOSTER_DIR)
 os.chdir(MAPTOPOSTER_DIR)  # Change working directory for relative paths
 
+from models import GenerateRequest, GenerateResponse, JobStatus, ThemeInfo
+from store import jobs
+from tasks import generate_map_task
+
 # Import the map poster functions
-from create_map_poster import (
-    get_coordinates, 
-    create_poster, 
-    load_theme, 
-    get_available_themes,
-    generate_output_filename
-)
+from create_map_poster import get_available_themes
 
 app = FastAPI(
     title="MapToPoster API",
@@ -50,109 +46,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Store for active generation jobs
-jobs: dict = {}
-
-# Request/Response Models
-class GenerateRequest(BaseModel):
-    city: str
-    country: str
-    theme: str = "noir"
-    distance: int = 15000
-    show_city_name: bool = True
-    show_country_name: bool = True  # NEW
-    show_coordinates: bool = True
-    orientation: str = "portrait"    # NEW: 'portrait' or 'landscape'
-    poster_size: str = "18x24"       # NEW: '18x24', '24x36', '12x16', 'A3', 'A2'
-    filename: str = ""               # NEW: optional custom filename
-
-class GenerateResponse(BaseModel):
-    job_id: str
-    status: str
-    message: str
-
-class JobStatus(BaseModel):
-    job_id: str
-    status: str  # pending, processing, completed, failed
-    progress: int  # 0-100
-    message: str
-    result_path: Optional[str] = None
-    error: Optional[str] = None
-
-class ThemeInfo(BaseModel):
-    id: str
-    name: str
-    description: Optional[str] = None
-    colors: dict
-
-
-# Background task for map generation
-async def generate_map_task(job_id: str, request: GenerateRequest):
-    """Background task that generates the map poster"""
-    global jobs
-    
-    try:
-        jobs[job_id]["status"] = "processing"
-        jobs[job_id]["progress"] = 10
-        jobs[job_id]["message"] = "Looking up coordinates..."
-        
-        # Get coordinates
-        coords = get_coordinates(request.city, request.country)
-        
-        jobs[job_id]["progress"] = 30
-        jobs[job_id]["message"] = "Loading theme..."
-        
-        # Load theme - need to set global THEME
-        import create_map_poster
-        create_map_poster.THEME = load_theme(request.theme)
-        
-        jobs[job_id]["progress"] = 40
-        jobs[job_id]["message"] = "Downloading map data..."
-        
-        # Generate output filename (use custom if provided, else auto-generate)
-        if request.filename and request.filename.strip():
-            # Ensure filename ends with .png and is in posters dir
-            clean_name = request.filename.strip().replace('.png', '')
-            output_file = os.path.join(MAPTOPOSTER_DIR, "posters", f"{clean_name}.png")
-        else:
-            output_file = generate_output_filename(request.city, request.theme)
-        
-        jobs[job_id]["progress"] = 50
-        jobs[job_id]["message"] = "Rendering poster..."
-        
-        # Create the poster with all parameters
-        # Using functools.partial to pass keyword arguments
-        from functools import partial
-        poster_func = partial(
-            create_poster,
-            request.city, 
-            request.country, 
-            coords, 
-            request.distance, 
-            output_file,
-            show_city_name=request.show_city_name,
-            show_country_name=request.show_country_name,
-            show_coordinates=request.show_coordinates,
-            orientation=request.orientation,
-            poster_size=request.poster_size
-        )
-        
-        # Run in executor to not block
-        loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, poster_func)
-        
-        jobs[job_id]["progress"] = 100
-        jobs[job_id]["status"] = "completed"
-        jobs[job_id]["message"] = "Poster generated successfully!"
-        # Store ONLY the filename (not full path) - frontend appends /api/posters/
-        jobs[job_id]["result_path"] = os.path.basename(output_file)
-        
-    except Exception as e:
-        jobs[job_id]["status"] = "failed"
-        jobs[job_id]["error"] = str(e)
-        jobs[job_id]["message"] = f"Error: {str(e)}"
-
 
 @app.get("/")
 async def root():
@@ -291,5 +184,4 @@ if __name__ == "__main__":
     # Run server
     # Pass app object directly for PyInstaller compatibility (no module import)
     is_frozen = getattr(sys, 'frozen', False)
-    uvicorn.run(app, host="127.0.0.1", port=8000, reload=False if is_frozen else False)
-
+    uvicorn.run(app, host="127.0.0.1", port=8000, reload=False)

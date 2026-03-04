@@ -156,14 +156,23 @@ wails build
 ```
 MapToPoster/
 ├── wails-app/              # 🚀 Wails Desktop App
-│   ├── app.go              # Go backend + Python sidecar management
-│   ├── frontend/           # React UI (TypeScript + Tailwind)
-│   └── python/             # Bundled server.exe
-├── backend/                # Python FastAPI server
-│   ├── server.py           # REST API for map generation
-│   └── server.spec         # PyInstaller config
-├── maptoposter-main/       # Core engine (osmnx + matplotlib)
-└── assets/                 # Screenshots and media
+│   ├── app.go              #    Core App Config & Lifecycle
+│   ├── window_manager.go   #    Native window controls & Save Dialogs
+│   ├── python_manager.go   #    Python sidecar active-process isolation
+│   ├── frontend/           #    React UI (TypeScript + Context API + Tailwind)
+│   │   └── src/
+│   │       ├── App.tsx         #    Root compose container
+│   │       ├── components/     #    Modular UI (TopBar, Canvas, Sidebars, Modals)
+│   │       └── context/        #    Global robust AppContext state
+│   └── python/             #    Bundled static server.exe
+├── backend/                # 🐍 Python FastAPI server
+│   ├── server.py           #    REST API routing
+│   ├── models.py           #    Pydantic request/response models
+│   ├── tasks.py            #    Map generation isolated background threads
+│   ├── store.py            #    Cross-request job state dictionary
+│   └── server.spec         #    PyInstaller config
+├── maptoposter-main/       # ⚙️ Core engine (osmnx + matplotlib)
+└── assets/                 # 📸 Screenshots and media
 ```
 
 **Tech Stack:**
